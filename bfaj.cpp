@@ -119,13 +119,12 @@ int main(int argc, char const *argv[])
 	}
 	a.ret();
 	func_type fn;
-	Error err = rt.add(&fn, &code);         // Add the generated code to the runtime.
+	Error err = rt.add(&fn, &code);
 	if (err) {
 		std::cerr << "ASMJIT Error" << std::endl;
 		std::cerr << DebugUtils::errorAsString(err) << std::endl;
 		return 1;
 	}
-	// ----> CodeHolder is no longer needed from here and can be destroyed <----
 	std::cout << "Running brainfuck" << std::endl;
 	fn();
 	rt.release(fn);
