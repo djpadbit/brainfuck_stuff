@@ -7,6 +7,7 @@
 #define MAX_INSTS 1024*1024
 
 #define DEFAULT_TO_HELLO
+//#define ENABLE_ASMJIT_LOGGING
 
 #ifdef DEFAULT_TO_HELLO
 const char hello_world[] = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
@@ -43,11 +44,15 @@ int main(int argc, char const *argv[])
 	}
 	JitRuntime rt;
 	CodeHolder code;
+#ifdef ENABLE_ASMJIT_LOGGING
 	FileLogger logger(stdout);
+#endif
 	PrintErrorHandler eh;
 
 	code.init(rt.getCodeInfo());
+#ifdef ENABLE_ASMJIT_LOGGING
 	code.setLogger(&logger);
+#endif
 	code.setErrorHandler(&eh);
 
 	X86Assembler a(&code);
