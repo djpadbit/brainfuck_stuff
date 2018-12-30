@@ -9,7 +9,7 @@ bfaj.cpp - Prettier JIT using asmjit
 ```
 
 ### Compiling
-Requires [asmjit](https://github.com/asmjit/asmjit)
+bfaj.cpp requires [asmjit](https://github.com/asmjit/asmjit)
 ```
 make
 ```
