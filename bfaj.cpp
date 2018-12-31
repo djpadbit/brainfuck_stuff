@@ -18,7 +18,6 @@ using namespace asmjit;
 static unsigned char bf_buff[BUFF_SIZE];
 static Label bf_loop_stack[MAX_LOOP_REC][2];
 static unsigned int bf_loop_stack_ptr = 0;
-static unsigned char *bf_ptr;
 
 typedef void (*func_type)(void);
 
@@ -57,13 +56,13 @@ int main(int argc, char const *argv[])
 
 	X86Assembler a(&code);
 
-	bf_ptr = &bf_buff[0];
 	unsigned int len = std::strlen(argv[1]);
 	unsigned int ptr_tmp;
 	Label tmpd,tmps;
 	std::cout << "Compiling brainfuck" << std::endl;
 	std::cout << "len : " << len << std::endl;
-	a.mov(x86::rsi,(uint64_t)bf_ptr);
+	a.mov(x86::rsi,(uint64_t)&bf_buff); // RSI is used as the pointer to the buffer
+
 	for (unsigned int ptr=0;ptr<len;ptr++) {
 		switch (argv[1][ptr]) {
 			case '>':
