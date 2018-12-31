@@ -242,24 +242,42 @@ static inline void instbuffsetup()
 
 int main(int argc, char const *argv[])
 {
+	char *file_data;
+	size_t len;
 	if (argc < 2) {
 #ifndef DEFAULT_TO_HELLO
-		printf("Gib brainfuck like ./bfc \"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.\"\n");
+		printf("Gib brainfuck like ./bf helloworld.b\n");
 		return 1;
 #else
 		printf("Did not receive brainfuck, defaulting to the hello world one\n");
-		argv[1] = (const char*)&hello_world;
+		file_data = (char*)&hello_world;
+		len = strlen(file_data);
 #endif
+	} else {
+		FILE *file;
+		if (!(file=fopen(argv[1], "r"))) {
+			printf("Coudln't open '%s'\n", argv[1]);
+			return 1;
+		}
+		fseek (file, 0, SEEK_END);
+		len = ftell(file);
+		rewind(file);
+		file_data = (char*)calloc(1,len);
+		if (!file_data) {
+			printf("Coudln't allocated memory to read file\n");
+			return 1;
+		}
+		fread(file_data,1,len,file);
+		fclose(file);
 	}
 	instbuffsetup();
 	bf_ptr = &bf_buff[0];
 	bf_loop_stack_ptr = &bf_loop_stack[0];
-	unsigned int len = strlen(argv[1]);
 	unsigned int tmp = 0;
 	printf("Compiling brainfuck\n");
 	printf("len : %i\n", len);
 	for (unsigned int ptr=0;ptr<len;ptr++) {
-		switch (argv[1][ptr]) {
+		switch (file_data[ptr]) {
 			case '>':
 				addptrfor();
 				break;

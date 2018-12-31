@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #include <asmjit/asmjit.h>
 
@@ -32,15 +33,36 @@ public:
 
 int main(int argc, char const *argv[])
 {
+	char *file_data;
+	size_t len = 0;
 	if (argc < 2) {
 #ifndef DEFAULT_TO_HELLO
-		std::cerr << "Gib brainfuck like ./bfc \"++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.\"" << std::endl;
+		std::cerr << "Gib brainfuck like ./bfc helloworld.b" << std::endl;
 		return 1;
 #else
 		std::cout << "Did not receive brainfuck, defaulting to the hello world one" << std::endl;
-		argv[1] = (const char*)&hello_world;
+		file_data = (char*)&hello_world;
+		len = std::strlen(file_data);
 #endif
+	} else {
+		std::ifstream file(argv[1]);
+		if (!file.is_open()) {
+			std::cerr << "Coudln't open file" << std::endl;
+			return 1;
+		}
+		file.seekg(0, std::ios::end);
+		len = file.tellg();
+		file.seekg(0, std::ios::beg);
+		file_data = new char[len];
+		if (!file_data) {
+			std::cerr << "Coudln't allocated memory" << std::endl;
+			return 1;
+		}
+		file.read(file_data, len);
+		file.close();
 	}
+
+
 	JitRuntime rt;
 	CodeHolder code;
 #ifdef ENABLE_ASMJIT_LOGGING
@@ -56,36 +78,35 @@ int main(int argc, char const *argv[])
 
 	X86Assembler a(&code);
 
-	unsigned int len = std::strlen(argv[1]);
-	unsigned int ptr_tmp;
+	size_t ptr_tmp;
 	Label tmpd,tmps;
 	std::cout << "Compiling brainfuck" << std::endl;
 	std::cout << "len : " << len << std::endl;
 	a.mov(x86::rsi,(uint64_t)&bf_buff); // RSI is used as the pointer to the buffer
 
-	for (unsigned int ptr=0;ptr<len;ptr++) {
-		switch (argv[1][ptr]) {
+	for (size_t ptr=0;ptr<len;ptr++) {
+		switch (file_data[ptr]) {
 			case '>':
 				ptr_tmp = ptr;
-				for (;ptr<len&&argv[1][ptr]=='>';ptr++);
+				for (;ptr<len&&file_data[ptr]=='>';ptr++);
 				ptr--;
 				a.add(x86::rsi,(ptr+1)-ptr_tmp);
 				break;
 			case '<':
 				ptr_tmp = ptr;
-				for (;ptr<len&&argv[1][ptr]=='<';ptr++);
+				for (;ptr<len&&file_data[ptr]=='<';ptr++);
 				ptr--;
 				a.sub(x86::rsi,(ptr+1)-ptr_tmp);
 				break;
 			case '+':
 				ptr_tmp = ptr;
-				for (;ptr<len&&argv[1][ptr]=='+';ptr++);
+				for (;ptr<len&&file_data[ptr]=='+';ptr++);
 				ptr--;
 				a.add(x86::dword_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
 			case '-':
 				ptr_tmp = ptr;
-				for (;ptr<len&&argv[1][ptr]=='-';ptr++);
+				for (;ptr<len&&file_data[ptr]=='-';ptr++);
 				ptr--;
 				a.sub(x86::dword_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
