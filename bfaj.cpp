@@ -113,12 +113,12 @@ int main(int argc, char const *argv[])
 			case '+':
 				for (ptr_tmp = ptr;ptr<len&&file_data[ptr]=='+';ptr++);
 				ptr--;
-				a.add(x86::dword_ptr(x86::rsi),(ptr+1)-ptr_tmp);
+				a.add(x86::byte_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
 			case '-':
 				for (ptr_tmp = ptr;ptr<len&&file_data[ptr]=='-';ptr++);
 				ptr--;
-				a.sub(x86::dword_ptr(x86::rsi),(ptr+1)-ptr_tmp);
+				a.sub(x86::byte_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
 			case '.':
 				a.mov(x86::rax,1);
@@ -146,8 +146,9 @@ int main(int argc, char const *argv[])
 				tmpd = bf_loop_stack[bf_loop_stack_ptr][0];
 				tmps = bf_loop_stack[bf_loop_stack_ptr][1];
 				a.bind(tmpd);
-				a.mov(x86::eax,x86::dword_ptr(x86::rsi));
-				a.test(x86::al,x86::al);
+				//a.mov(x86::al,x86::byte_ptr(x86::rsi));
+				//a.test(x86::al,x86::al);
+				a.cmp(x86::byte_ptr(x86::rsi),0);
 				a.jne(tmps);
 				break;
 		}
