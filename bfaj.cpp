@@ -62,7 +62,6 @@ int main(int argc, char const *argv[])
 		file.close();
 	}
 
-
 	JitRuntime rt;
 	CodeHolder code;
 #ifdef ENABLE_ASMJIT_LOGGING
@@ -87,26 +86,22 @@ int main(int argc, char const *argv[])
 	for (size_t ptr=0;ptr<len;ptr++) {
 		switch (file_data[ptr]) {
 			case '>':
-				ptr_tmp = ptr;
-				for (;ptr<len&&file_data[ptr]=='>';ptr++);
+				for (ptr_tmp = ptr;ptr<len&&file_data[ptr]=='>';ptr++);
 				ptr--;
 				a.add(x86::rsi,(ptr+1)-ptr_tmp);
 				break;
 			case '<':
-				ptr_tmp = ptr;
-				for (;ptr<len&&file_data[ptr]=='<';ptr++);
+				for (ptr_tmp = ptr;ptr<len&&file_data[ptr]=='<';ptr++);
 				ptr--;
 				a.sub(x86::rsi,(ptr+1)-ptr_tmp);
 				break;
 			case '+':
-				ptr_tmp = ptr;
-				for (;ptr<len&&file_data[ptr]=='+';ptr++);
+				for (ptr_tmp = ptr;ptr<len&&file_data[ptr]=='+';ptr++);
 				ptr--;
 				a.add(x86::dword_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
 			case '-':
-				ptr_tmp = ptr;
-				for (;ptr<len&&file_data[ptr]=='-';ptr++);
+				for (ptr_tmp = ptr;ptr<len&&file_data[ptr]=='-';ptr++);
 				ptr--;
 				a.sub(x86::dword_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
