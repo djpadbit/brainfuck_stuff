@@ -13,6 +13,7 @@
 #ifdef DEFAULT_TO_HELLO
 const char hello_world[] = "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.";
 #endif
+const char bf_charset[] = "<>+-.,[]";
 
 using namespace asmjit;
 
@@ -30,6 +31,19 @@ public:
 		return false;
 	}
 };
+
+void clean_bf(char **fd, size_t *l) // Needs work, doesn't handle comments and stuff
+{
+	size_t ptr = 0;
+	char *fdp = *fd;
+	for (size_t i=0;i<(*l);i++) {
+		if (std::strchr(bf_charset,fdp[i])) {
+			fdp[ptr++] = fdp[i];
+		}
+	}
+	(*fd) = (char*)std::realloc(fdp,ptr);
+	(*l) = ptr;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -53,13 +67,14 @@ int main(int argc, char const *argv[])
 		file.seekg(0, std::ios::end);
 		len = file.tellg();
 		file.seekg(0, std::ios::beg);
-		file_data = new char[len];
+		file_data = (char*)malloc(len);
 		if (!file_data) {
 			std::cerr << "Coudln't allocated memory" << std::endl;
 			return 1;
 		}
 		file.read(file_data, len);
 		file.close();
+		clean_bf(&file_data,&len);
 	}
 
 	JitRuntime rt;

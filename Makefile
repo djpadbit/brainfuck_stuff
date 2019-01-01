@@ -1,7 +1,12 @@
+CFLAGS = -O3
+
 all:
-	gcc bf.c -O3 -o bf
-	gcc bfc.c -O3 -o bfc
-	g++ bfaj.cpp -O3 -lasmjit -o bfaj
+	gcc bf.c $(CFLAGS) -o bf
+	gcc bfc.c $(CFLAGS) -o bfc
+	g++ bfaj.cpp $(CFLAGS) -lasmjit -o bfaj
+
+debug: CFLAGS += -g
+debug: all
 
 clean:
 	rm bf bfc bfaj
