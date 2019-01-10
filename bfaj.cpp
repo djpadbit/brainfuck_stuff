@@ -97,6 +97,7 @@ int main(int argc, char const *argv[])
 	std::cout << "Compiling brainfuck" << std::endl;
 	std::cout << "len : " << len << std::endl;
 	a.mov(x86::rsi,(uint64_t)&bf_buff); // RSI is used as the pointer to the buffer
+	a.mov(x86::rdx,1); // We'll always be writing 1 byte anyways
 
 	for (size_t ptr=0;ptr<len;ptr++) {
 		switch (file_data[ptr]) {
@@ -121,15 +122,13 @@ int main(int argc, char const *argv[])
 				a.sub(x86::byte_ptr(x86::rsi),(ptr+1)-ptr_tmp);
 				break;
 			case '.':
-				a.mov(x86::rax,1);
-				a.mov(x86::rdi,x86::rax);
-				a.mov(x86::rdx,x86::rax);
+				a.mov(x86::rax,x86::rdx);
+				a.mov(x86::rdi,x86::rdx);
 				a.syscall();
 				break;
 			case ',':
 				a.mov(x86::rax,0);
 				a.mov(x86::rdi,x86::rax);
-				a.mov(x86::rdx,1);
 				a.syscall();
 				break;
 			case '[':
