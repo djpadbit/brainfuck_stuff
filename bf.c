@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define BUFF_SIZE 30000
-#define MAX_LOOP_REC 1024*1024
+#define MAX_LOOP_REC 1024
 
 static unsigned char bf_buff[BUFF_SIZE];
 static unsigned int bf_loop_stack[MAX_LOOP_REC];

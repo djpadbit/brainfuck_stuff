@@ -6,7 +6,7 @@
 #include <signal.h>
 
 #define BUFF_SIZE 30000
-#define MAX_LOOP_REC 1024*1024
+#define MAX_LOOP_REC 1024
 #define MAX_INSTS 1024*1024
 
 #define DEFAULT_TO_HELLO
